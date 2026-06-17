@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, reactive } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useDataStore } from '../../stores/data'
 
@@ -15,7 +15,7 @@ const positions = ['总经理', '部门经理', '主管', '领班', '员工']
 
 const dialogVisible = ref(false)
 const formRef = ref()
-const form = ref({
+const form = reactive({
   id: null,
   name: '',
   position: '',
@@ -57,12 +57,10 @@ const submitForm = async () => {
   await formRef.value.validate((valid) => {
     if (valid) {
       if (form.value.id) {
-        const index = staff.value.findIndex(s => s.id === form.value.id)
-        staff.value[index] = { ...form.value }
+        dataStore.updateStaff(form)
         ElMessage.success('更新成功')
       } else {
-        form.value.id = Date.now()
-        staff.value.push({ ...form.value })
+        dataStore.addStaff(form)
         ElMessage.success('添加成功')
       }
       dialogVisible.value = false
@@ -124,7 +122,7 @@ const submitForm = async () => {
           <el-input v-model="form.phone" placeholder="请输入联系电话" />
         </el-form-item>
         <el-form-item label="入职日期" prop="hireDate">
-          <el-date-picker v-model="form.hireDate" type="date" placeholder="选择日期" style="width: 100%" />
+          <el-date-picker v-model="form.hireDate" type="date" placeholder="选择日期" style="width: 100%" value-format="YYYY-MM-DD"/>
         </el-form-item>
         <el-form-item label="工资" prop="salary">
           <el-input-number v-model="form.salary" :min="0" :step="500" style="width: 100%" />

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, reactive } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useDataStore } from '../../stores/data'
 
@@ -12,7 +12,7 @@ onMounted(() => {
 
 const dialogVisible = ref(false)
 const formRef = ref()
-const form = ref({
+const form = reactive({
   id: null,
   name: '',
   description: '',
@@ -55,12 +55,10 @@ const submitForm = async () => {
   await formRef.value.validate((valid) => {
     if (valid) {
       if (form.value.id) {
-        const index = services.value.findIndex(s => s.id === form.value.id)
-        services.value[index] = { ...form.value }
+        dataStore.updateService(form)
         ElMessage.success('更新成功')
       } else {
-        form.value.id = Date.now()
-        services.value.push({ ...form.value })
+        dataStore.addService(form)
         ElMessage.success('添加成功')
       }
       dialogVisible.value = false

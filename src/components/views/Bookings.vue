@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, reactive } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useDataStore } from '../../stores/data'
 
@@ -13,7 +13,7 @@ onMounted(() => {
 
 const dialogVisible = ref(false)
 const formRef = ref()
-const form = ref({
+const form = reactive({
   id: null,
   guest: '',
   guestPhone: '',
@@ -68,13 +68,11 @@ const submitForm = async () => {
   
   await formRef.value.validate((valid) => {
     if (valid) {
-      if (form.value.id) {
-        const index = bookings.value.findIndex(b => b.id === form.value.id)
-        bookings.value[index] = { ...form.value }
+      if (form.id) {
+        dataStore.updateBooking(form)
         ElMessage.success('更新成功')
       } else {
-        form.value.id = Date.now()
-        bookings.value.push({ ...form.value })
+        dataStore.addBooking(form)
         ElMessage.success('添加成功')
       }
       dialogVisible.value = false
@@ -136,10 +134,10 @@ const submitForm = async () => {
           </el-select>
         </el-form-item>
         <el-form-item label="入住日期" prop="checkIn">
-          <el-date-picker v-model="form.checkIn" type="date" placeholder="选择日期" style="width: 100%" />
+          <el-date-picker v-model="form.checkIn" type="date" placeholder="选择日期" style="width: 100%" value-format="YYYY-MM-DD" />
         </el-form-item>
         <el-form-item label="离店日期" prop="checkOut">
-          <el-date-picker v-model="form.checkOut" type="date" placeholder="选择日期" style="width: 100%" />
+          <el-date-picker v-model="form.checkOut" type="date" placeholder="选择日期" style="width: 100%" value-format="YYYY-MM-DD" />
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-select v-model="form.status" placeholder="请选择状态" style="width: 100%">

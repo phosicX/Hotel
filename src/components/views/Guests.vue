@@ -1,18 +1,16 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, reactive } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useDataStore } from '../../stores/data'
 
 const dataStore = useDataStore()
 const guests = ref(dataStore.guests)
 
-onMounted(() => {
-  guests.value = dataStore.guests
-})
+onMounted(() => { guests.value = dataStore.guests })
 
 const dialogVisible = ref(false)
 const formRef = ref()
-const form = ref({
+const form = reactive({
   id: null,
   name: '',
   phone: '',
@@ -51,13 +49,11 @@ const submitForm = async () => {
   
   await formRef.value.validate((valid) => {
     if (valid) {
-      if (form.value.id) {
-        const index = guests.value.findIndex(g => g.id === form.value.id)
-        guests.value[index] = { ...form.value }
+      if (form.id) {
+        dataStore.updateGuest(form)
         ElMessage.success('更新成功')
       } else {
-        form.value.id = Date.now()
-        guests.value.push({ ...form.value })
+        dataStore.addGuest(form)
         ElMessage.success('添加成功')
       }
       dialogVisible.value = false

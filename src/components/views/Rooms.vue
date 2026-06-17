@@ -6,9 +6,7 @@ import { useDataStore } from '../../stores/data'
 const dataStore = useDataStore()
 const rooms = ref(dataStore.rooms)
 
-onMounted(() => {
-  rooms.value = dataStore.rooms
-})
+onMounted(() => { rooms.value = dataStore.rooms })
 
 const dialogVisible = ref(false)
 const dialogTitle = ref('添加房间')
